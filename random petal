@@ -1,0 +1,77 @@
+let angle = 0;
+let petalCount = 6;
+let petalLength = 100;
+let rotationSpeed = 0.02; // Initial rotation direction (right to left)
+let flowerRadius = 150;
+let bgColor;
+let petalColors = [];
+let centerColor;
+let lastColorChangeTime;
+const colorChangeInterval = 5000; // 5 seconds in milliseconds
+
+function setup() {
+  createCanvas(600, 600);
+  colorMode(HSB, 360, 100, 100); // Use HSB color mode
+  bgColor = color(0, 0, 100); // Set background color in HSB (gray)
+  background(bgColor);
+
+  centerColor = randomColor();
+  for (let i = 0; i < petalCount; i++) {
+    petalColors.push(randomColor());
+  }
+
+  lastColorChangeTime = millis(); // Record the last color change time
+}
+
+function draw() {
+  let currentTime = millis();
+
+  // Check if 5 seconds have passed since the last color change
+  if (currentTime - lastColorChangeTime >= colorChangeInterval) {
+    // Change the colors of the petals and the center using lerpColor
+    centerColor = randomColor();
+    for (let i = 0; i < petalCount; i++) {
+      petalColors[i] = randomColor();
+    }
+    lastColorChangeTime = currentTime; // Update the last color change time
+  }
+
+  translate(width / 2, height / 2);
+
+  for (let i = 0; i < petalCount; i++) {
+    let x = cos(angle + TWO_PI / petalCount * i) * flowerRadius;
+    let y = sin(angle + TWO_PI / petalCount * i) * flowerRadius;
+
+    push();
+    translate(x, y);
+    rotate(angle);
+    drawPetal(petalColors[i]);
+    pop();
+  }
+
+  fill(centerColor);
+  ellipse(0, 0, 20, 20);
+
+  angle += rotationSpeed;
+}
+
+function drawPetal(petalColor) {
+  fill(petalColor);
+  beginShape();
+  for (let i = 0; i < 5; i++) {
+    let angle = TWO_PI / 5 * i;
+    let x = cos(angle) * petalLength;
+    let y = sin(angle) * petalLength;
+    vertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function randomColor() {
+  return color(random(0, 10), 0, random(0, 100)); // Random hue between white and black, fixed saturation and random brightness
+}
+
+function mousePressed() {
+  // Toggle the rotation direction when the mouse is clicked
+  rotationSpeed *= -1;
+}
