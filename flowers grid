@@ -1,0 +1,65 @@
+let flowers = [];
+let gridSize = 5; // 5x5 grid
+
+function setup() {
+    createCanvas(600, 600);
+
+    let flowerWidth = width / gridSize;
+    let flowerHeight = height / gridSize;
+
+    // Create flowers in a grid
+    for (let x = 0; x < width; x += flowerWidth) {
+        for (let y = 0; y < height; y += flowerHeight) {
+            flowers.push(new Flower(x, y, flowerWidth, flowerHeight));
+        }
+    }
+}
+
+function draw() {
+    background(255);
+
+    // Display all flowers
+    for (let flower of flowers) {
+        flower.display();
+        if (mouseIsPressed && mouseWithinCanvas()) {
+            flower.move(mouseX - pmouseX, mouseY - pmouseY);
+            flower.rotateFlower();
+        }
+    }
+}
+
+function mouseWithinCanvas() {
+    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
+}
+
+class Flower {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.size = min(w, h) / 2;
+        this.petals = 5;
+        this.color = color(random(255), random(255), random(255));
+        this.angle = 0;
+    }
+
+    display() {
+        push();
+        translate(this.x + this.size, this.y + this.size);
+        rotate(this.angle);
+        fill(this.color);
+        for (let i = 0; i < this.petals; i++) {
+            ellipse(0, this.size / 2, this.size, this.size);
+            rotate(TWO_PI / this.petals);
+        }
+        pop();
+    }
+
+    move(dx, dy) {
+        this.x += dx;
+        this.y += dy;
+    }
+
+    rotateFlower() {
+        this.angle += 0.05;
+    }
+}
